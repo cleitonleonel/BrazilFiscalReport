@@ -57,6 +57,7 @@ class Dacte(xFPDF):
         self.default_font = config.font_type.value
         self.price_precision = config.decimal_config.price_precision
         self.quantity_precision = config.decimal_config.quantity_precision
+        self.watermark_cancelled = config.watermark_cancelled
 
         root = ET.fromstring(xml)
         self.inf_cte = root.find(f"{URL}infCte")
@@ -155,12 +156,32 @@ class Dacte(xFPDF):
         )
 
     def _draw_void_watermark(self):
-        if extract_text(self.ide, "tpAmb") == "2":
-            self.set_font(self.default_font, "B", 60)
+        """
+        Draw a watermark on the DACTE when the protocol is not available or
+        when the environment is homologation.
+        """
+        is_production_environment = extract_text(self.ide, "tpAmb") == "1"
+        is_protocol_available = self.prot_cte is not None
+
+        # Exit early if no watermark is needed
+        watermark_text = None
+        font_size = 60
+        if self.watermark_cancelled:
+            if is_production_environment:
+                watermark_text = "CANCELADA"
+            else:
+                watermark_text = "CANCELADA - SEM VALOR FISCAL"
+                font_size = 45
+
+        elif not is_production_environment or not is_protocol_available:
             watermark_text = "SEM VALOR FISCAL"
+
+        if watermark_text:
+            self.set_font(self.default_font, "B", font_size)
+
             width = self.get_string_width(watermark_text)
             self.set_text_color(r=220, g=150, b=150)
-            height = 15
+            height = font_size * 0.25
             page_width = self.w
             page_height = self.h
             x_center = (page_width - width) / 2

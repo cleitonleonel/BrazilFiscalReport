@@ -114,3 +114,27 @@ def test_dacte_tomador_outros(tmp_path, load_dacte, logo_path):
     dacte = load_dacte("dacte_tomador_outros.xml", config=dacte_config)
     pdf_path = get_pdf_output_path("dacte", "dacte_tomador_outros")
     assert_pdf_equal(dacte, pdf_path, tmp_path)
+
+
+def test_dacte_watermark_cancelled_production(tmp_path, load_dacte):
+    """Test watermark for cancelled DACTE in production environment"""
+    dacte_config = DacteConfig(watermark_cancelled=True)
+    dacte = load_dacte("dacte_test_1.xml", config=dacte_config)
+    pdf_path = get_pdf_output_path("dacte", "dacte_watermark_cancelled_production")
+    assert_pdf_equal(dacte, pdf_path, tmp_path)
+
+
+def test_dacte_watermark_cancelled_homologation(tmp_path, load_dacte):
+    """Test watermark for cancelled DACTE in homologation environment"""
+    dacte_config = DacteConfig(watermark_cancelled=True)
+    dacte = load_dacte("dacte_test_homolog.xml", config=dacte_config)
+    pdf_path = get_pdf_output_path("dacte", "dacte_watermark_cancelled_homologation")
+    assert_pdf_equal(dacte, pdf_path, tmp_path)
+
+
+def test_dacte_watermark_homologation_only(tmp_path, load_dacte):
+    """Test watermark for DACTE in homologation environment without cancellation"""
+    dacte_config = DacteConfig(watermark_cancelled=False)
+    dacte = load_dacte("dacte_test_homolog.xml", config=dacte_config)
+    pdf_path = get_pdf_output_path("dacte", "dacte_watermark_homologation_only")
+    assert_pdf_equal(dacte, pdf_path, tmp_path)
