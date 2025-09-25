@@ -46,3 +46,4 @@ class DacteConfig:
     receipt_pos: ReceiptPosition = ReceiptPosition.TOP
     decimal_config: DecimalConfig = field(default_factory=DecimalConfig)
     font_type: FontType = FontType.TIMES
+    watermark_cancelled: bool = False
